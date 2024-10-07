@@ -1,0 +1,51 @@
+name: FreeBitcoin Cookies
+
+on:
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  cookies:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        index: [764,765,766,767,768,769,770,771,772,773,774,775,776,777,778,779,780,781,782,783,784,785,786,787,788,789,790,791,792,793,794,795,796,797,798,799,800,801,802,803,804,805,806,807,808,809,810,811,812,813,814,815,816,817,818,819,820,821,822,823,824,825]
+      fail-fast: false  # Continue even if a job fails
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Install Google Chrome
+        run: |
+          if (!(Get-Command "chrome.exe" -ErrorAction SilentlyContinue)) {
+            Write-Host "Google Chrome is not installed. Installing..."
+            choco install googlechrome --ignore-checksums --no-progress -y  # Install Chrome silently, ignoring checksum
+          } else {
+            Write-Host "Google Chrome is already installed. Skipping installation."
+          }
+        shell: pwsh
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Bot with Specified Index
+        env:
+          FREEBITCO_USER_NO: ${{ matrix.index }}  # Use matrix index as user number
+          FREEBITCO_PASSWORD: ${{ secrets.FREEBITCO_PASSWORD }}
+        run: |
+          Write-Host "Running bot with user number ${{ matrix.index }}."
+          node cookies-bot.js
+        shell: pwsh
+        continue-on-error: true
+
+      - name: Upload Cookies Directory
+        uses: actions/upload-artifact@v4
+        with:
+          name: cookies-${{ matrix.index }}  # Upload each job as cookies-${{ matrix.index }}.zip
+          path: ./cookies
+

@@ -1,0 +1,46 @@
+name: FreeBitcoin Rewards
+
+on:
+  workflow_dispatch:
+
+jobs:
+  roll:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      matrix:
+        include:
+          - cookie_index: 1
+            secret_name: USER_COOKIES1
+          - cookie_index: 2
+            secret_name: USER_COOKIES2
+          - cookie_index: 3
+            secret_name: USER_COOKIES3
+          - cookie_index: 99
+            secret_name: USER_COOKIES99
+      fail-fast: false  # Continue even if a job fails
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Bot with Specified Cookie
+        env:
+          USER_COOKIES_BASE64: ${{ secrets[matrix.secret_name] }}  # Use the mapped secret name
+        run: |
+          if [ -n "$USER_COOKIES_BASE64" ]; then
+            echo "Running bot with cookie index ${{ matrix.cookie_index }}."
+            USER_COOKIES_BASE64=$USER_COOKIES_BASE64 node rewards.js
+          else
+            echo "No cookie found for index ${{ matrix.cookie_index }}. Skipping."
+          fi
+        continue-on-error: true
+

@@ -1,0 +1,91 @@
+name: FreeBitcoin
+
+on:
+  workflow_dispatch:
+
+jobs:
+  roll_1:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - cookie_index: 1
+          secret_name: USER_COOKIES1
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Install Google Chrome
+        shell: pwsh
+        run: |
+          $maxAttempts = 3
+          $attempt = 1
+          $chromeInstalled = $false
+          while ($attempt -le $maxAttempts -and !$chromeInstalled) {
+            try {
+              Write-Host "Attempt $attempt of $maxAttempts to install Google Chrome..."
+              choco install googlechrome --ignore-checksums --no-progress -y
+              if ($LASTEXITCODE -eq 0) {
+                Write-Host "Google Chrome installation succeeded."
+                $chromeInstalled = $true
+              } else {
+                Write-Host "Google Chrome installation failed with exit code $LASTEXITCODE."
+                throw "Installation failed."
+              }
+            } catch {
+              Write-Host "Attempt $attempt failed. Retrying in 30 seconds..."
+              Start-Sleep -Seconds 30
+              $attempt++
+            }
+          }
+
+          if (-not $chromeInstalled) {
+            Write-Host "Google Chrome installation failed after $maxAttempts attempts."
+            exit 1
+          }
+
+      - name: Download and Extract CloudFreed Repository
+        run: |
+          curl -LO https://github.com/Akmal-CloudFreed/CloudFreed-CloudFlare-solver-bypass/archive/refs/heads/main.zip
+          Expand-Archive -Path main.zip -DestinationPath ./  # Extract into the current directory
+
+          # Check if destination exists and remove if necessary
+          if (Test-Path -Path ../CloudFreed-CloudFlare-solver-bypass) {
+            Remove-Item -Recurse -Force ../CloudFreed-CloudFlare-solver-bypass
+          }
+
+          # Move the entire folder instead of just its contents
+          Move-Item -Path ./CloudFreed-CloudFlare-solver-bypass-main -Destination ../CloudFreed-CloudFlare-solver-bypass
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Install CloudFreed Dependencies
+        run: npm install --prefix ../CloudFreed-CloudFlare-solver-bypass  # Install dependencies in the correct CloudFreed directory
+
+      - name: Run Bot with Specified Cookie
+        env:
+          USER_COOKIES_BASE64: ${{ secrets[matrix.secret_name] }}  # Use the mapped secret name
+        run: |
+          if ($Env:USER_COOKIES_BASE64) {
+            Write-Host "Running bot with cookie index ${{ matrix.cookie_index }}."
+            node freebitco.js
+          } else {
+            Write-Host "No cookie found for index ${{ matrix.cookie_index }}. Skipping."
+          }
+        shell: pwsh
+        continue-on-error: true
+
+      - name: Upload Screenshots
+        uses: actions/upload-artifact@v3
+        with:
+          name: screenshots-${{ matrix.cookie_index }}
+          path: '*.png'

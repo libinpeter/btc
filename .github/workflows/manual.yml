@@ -1,0 +1,65 @@
+name: FreeBitcoin Auto Roll
+
+on:
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  roll:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - cookie_index: 1
+            secret_name: USER_COOKIES1
+          - cookie_index: 2
+            secret_name: USER_COOKIES2
+          - cookie_index: 3
+            secret_name: USER_COOKIES3
+          - cookie_index: 4
+            secret_name: USER_COOKIES4
+          - cookie_index: 5
+            secret_name: USER_COOKIES5
+          - cookie_index: 6
+            secret_name: USER_COOKIES6
+          - cookie_index: 7
+            secret_name: USER_COOKIES7
+          - cookie_index: 8
+            secret_name: USER_COOKIES8
+          - cookie_index: 9
+            secret_name: USER_COOKIES9
+          - cookie_index: 10
+            secret_name: USER_COOKIES10
+      fail-fast: false  # Continue even if a job fails
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Tor
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tor
+          sudo systemctl start tor || sudo service tor start || echo "Tor start failed, continuing..."
+        continue-on-error: true  # Continue even if Tor installation fails
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Bot with Specified Cookie
+        env:
+          PROXY_API_KEY: ${{ secrets.PROXY_API_KEY }}
+          USER_COOKIES_BASE64: ${{ secrets[matrix.secret_name] }}  # Use the mapped secret name
+        run: |
+          if [ -n "$USER_COOKIES_BASE64" ]; then
+            echo "Running bot with cookie index ${{ matrix.cookie_index }}."
+            USER_COOKIES_BASE64=$USER_COOKIES_BASE64 node freebitco-bot.js
+          else
+            echo "No cookie found for index ${{ matrix.cookie_index }}. Skipping."
+          fi
+        continue-on-error: true
+

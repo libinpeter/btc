@@ -1,0 +1,112 @@
+name: FreeBitcoin Signup
+
+on:
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest  # Running on Ubuntu
+    outputs:
+      indices: ${{ steps.set_indices.outputs.indices }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Read and Calculate Next Index Range
+        id: set_indices
+        shell: bash
+        run: |
+          stateFile="signup_index.txt"
+
+          # Check if the state file exists
+          if [ ! -f "$stateFile" ]; then
+            echo "Error: State file '$stateFile' does not exist. Failing the workflow."
+            exit 1
+          fi
+
+          last_index=$(cat "$stateFile" | tr -d '[:space:]')
+
+          # Validate the last index is an integer
+          if ! [[ "$last_index" =~ ^[0-9]+$ ]]; then
+            echo "Error: Invalid last index '$last_index' in '$stateFile'."
+            exit 1
+          fi
+
+          start=$((last_index + 1))
+          end=$((start + 5))
+          indicesArray=($(seq $start $end))
+          indicesJson=$(printf '%s\n' "${indicesArray[@]}" | jq -R . | jq -s . | jq -c .)
+
+          echo "Next indices: $indicesJson"
+          echo "$end" > "$stateFile"
+
+          # Configure Git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git pull
+          git add "$stateFile"
+          git commit -m "Update signup_index to $end" || echo "No changes to commit."
+          git push
+
+          # Set the output for the next job
+          echo "indices=$indicesJson" >> "$GITHUB_OUTPUT"
+
+  signup:
+    needs: prepare
+    runs-on: windows-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        index: ${{ fromJson(needs.prepare.outputs.indices) }}
+      fail-fast: false
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Install Google Chrome
+        run: |
+          if (!(Get-Command "chrome.exe" -ErrorAction SilentlyContinue)) {
+            Write-Host "Google Chrome is not installed. Installing..."
+            choco install googlechrome --ignore-checksums --no-progress -y
+          } else {
+            Write-Host "Google Chrome is already installed. Skipping installation."
+          }
+        shell: pwsh
+
+      - name: Download and Extract CloudFreed Repository
+        run: |
+          curl -LO https://github.com/Akmal-CloudFreed/CloudFreed-CloudFlare-solver-bypass/archive/refs/heads/main.zip
+          Expand-Archive -Path main.zip -DestinationPath ./  
+          if (Test-Path -Path ../CloudFreed-CloudFlare-solver-bypass) {
+            Remove-Item -Recurse -Force ../CloudFreed-CloudFlare-solver-bypass
+          }
+          Move-Item -Path ./CloudFreed-CloudFlare-solver-bypass-main -Destination ../CloudFreed-CloudFlare-solver-bypass
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Install CloudFreed Dependencies
+        run: npm install --prefix ../CloudFreed-CloudFlare-solver-bypass
+
+      - name: Run Bot with Specified Index
+        env:
+          FREEBITCO_USER_NO: ${{ matrix.index }}
+          FREEBITCO_PASSWORD: ${{ secrets.FREEBITCO_PASSWORD }}
+        run: |
+          Write-Host "Running bot with user number ${{ matrix.index }}."
+          node signup.js
+        shell: pwsh
+        continue-on-error: true
+
+      - name: Upload Screenshots
+        uses: actions/upload-artifact@v3
+        with:
+          name: screenshots-${{ matrix.index }}
+          path: '*.png'

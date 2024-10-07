@@ -1,0 +1,238 @@
+name: FreeBitcoin Multiplier - 2
+
+on:
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  multiply_2:
+    runs-on: ubuntu-latest
+    environment: production
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - cookie_index: 1
+          secret_name: USER_ENV_COOKIES1
+        - cookie_index: 2
+          secret_name: USER_ENV_COOKIES2
+        - cookie_index: 3
+          secret_name: USER_ENV_COOKIES3
+        - cookie_index: 4
+          secret_name: USER_ENV_COOKIES4
+        - cookie_index: 5
+          secret_name: USER_ENV_COOKIES5
+        - cookie_index: 6
+          secret_name: USER_ENV_COOKIES6
+        - cookie_index: 7
+          secret_name: USER_ENV_COOKIES7
+        - cookie_index: 8
+          secret_name: USER_ENV_COOKIES8
+        - cookie_index: 9
+          secret_name: USER_ENV_COOKIES9
+        - cookie_index: 10
+          secret_name: USER_ENV_COOKIES10
+        - cookie_index: 11
+          secret_name: USER_ENV_COOKIES11
+        - cookie_index: 12
+          secret_name: USER_ENV_COOKIES12
+        - cookie_index: 13
+          secret_name: USER_ENV_COOKIES13
+        - cookie_index: 14
+          secret_name: USER_ENV_COOKIES14
+        - cookie_index: 15
+          secret_name: USER_ENV_COOKIES15
+        - cookie_index: 16
+          secret_name: USER_ENV_COOKIES16
+        - cookie_index: 17
+          secret_name: USER_ENV_COOKIES17
+        - cookie_index: 18
+          secret_name: USER_ENV_COOKIES18
+        - cookie_index: 19
+          secret_name: USER_ENV_COOKIES19
+        - cookie_index: 20
+          secret_name: USER_ENV_COOKIES20
+        - cookie_index: 21
+          secret_name: USER_ENV_COOKIES21
+        - cookie_index: 22
+          secret_name: USER_ENV_COOKIES22
+        - cookie_index: 23
+          secret_name: USER_ENV_COOKIES23
+        - cookie_index: 24
+          secret_name: USER_ENV_COOKIES24
+        - cookie_index: 25
+          secret_name: USER_ENV_COOKIES25
+        - cookie_index: 26
+          secret_name: USER_ENV_COOKIES26
+        - cookie_index: 27
+          secret_name: USER_ENV_COOKIES27
+        - cookie_index: 28
+          secret_name: USER_ENV_COOKIES28
+        - cookie_index: 29
+          secret_name: USER_ENV_COOKIES29
+        - cookie_index: 30
+          secret_name: USER_ENV_COOKIES30
+        - cookie_index: 31
+          secret_name: USER_ENV_COOKIES31
+        - cookie_index: 32
+          secret_name: USER_ENV_COOKIES32
+        - cookie_index: 33
+          secret_name: USER_ENV_COOKIES33
+        - cookie_index: 34
+          secret_name: USER_ENV_COOKIES34
+        - cookie_index: 35
+          secret_name: USER_ENV_COOKIES35
+        - cookie_index: 36
+          secret_name: USER_ENV_COOKIES36
+        - cookie_index: 37
+          secret_name: USER_ENV_COOKIES37
+        - cookie_index: 38
+          secret_name: USER_ENV_COOKIES38
+        - cookie_index: 39
+          secret_name: USER_ENV_COOKIES39
+        - cookie_index: 40
+          secret_name: USER_ENV_COOKIES40
+        - cookie_index: 41
+          secret_name: USER_ENV_COOKIES41
+        - cookie_index: 42
+          secret_name: USER_ENV_COOKIES42
+        - cookie_index: 43
+          secret_name: USER_ENV_COOKIES43
+        - cookie_index: 44
+          secret_name: USER_ENV_COOKIES44
+        - cookie_index: 45
+          secret_name: USER_ENV_COOKIES45
+        - cookie_index: 46
+          secret_name: USER_ENV_COOKIES46
+        - cookie_index: 47
+          secret_name: USER_ENV_COOKIES47
+        - cookie_index: 48
+          secret_name: USER_ENV_COOKIES48
+        - cookie_index: 49
+          secret_name: USER_ENV_COOKIES49
+        - cookie_index: 50
+          secret_name: USER_ENV_COOKIES50
+        - cookie_index: 51
+          secret_name: USER_ENV_COOKIES51
+        - cookie_index: 52
+          secret_name: USER_ENV_COOKIES52
+        - cookie_index: 53
+          secret_name: USER_ENV_COOKIES53
+        - cookie_index: 54
+          secret_name: USER_ENV_COOKIES54
+        - cookie_index: 55
+          secret_name: USER_ENV_COOKIES55
+        - cookie_index: 56
+          secret_name: USER_ENV_COOKIES56
+        - cookie_index: 57
+          secret_name: USER_ENV_COOKIES57
+        - cookie_index: 58
+          secret_name: USER_ENV_COOKIES58
+        - cookie_index: 59
+          secret_name: USER_ENV_COOKIES59
+        - cookie_index: 60
+          secret_name: USER_ENV_COOKIES60
+        - cookie_index: 61
+          secret_name: USER_ENV_COOKIES61
+        - cookie_index: 62
+          secret_name: USER_ENV_COOKIES62
+        - cookie_index: 63
+          secret_name: USER_ENV_COOKIES63
+        - cookie_index: 64
+          secret_name: USER_ENV_COOKIES64
+        - cookie_index: 65
+          secret_name: USER_ENV_COOKIES65
+        - cookie_index: 66
+          secret_name: USER_ENV_COOKIES66
+        - cookie_index: 67
+          secret_name: USER_ENV_COOKIES67
+        - cookie_index: 68
+          secret_name: USER_ENV_COOKIES68
+        - cookie_index: 69
+          secret_name: USER_ENV_COOKIES69
+        - cookie_index: 70
+          secret_name: USER_ENV_COOKIES70
+        - cookie_index: 71
+          secret_name: USER_ENV_COOKIES71
+        - cookie_index: 72
+          secret_name: USER_ENV_COOKIES72
+        - cookie_index: 73
+          secret_name: USER_ENV_COOKIES73
+        - cookie_index: 74
+          secret_name: USER_ENV_COOKIES74
+        - cookie_index: 75
+          secret_name: USER_ENV_COOKIES75
+        - cookie_index: 76
+          secret_name: USER_ENV_COOKIES76
+        - cookie_index: 77
+          secret_name: USER_ENV_COOKIES77
+        - cookie_index: 78
+          secret_name: USER_ENV_COOKIES78
+        - cookie_index: 79
+          secret_name: USER_ENV_COOKIES79
+        - cookie_index: 80
+          secret_name: USER_ENV_COOKIES80
+        - cookie_index: 81
+          secret_name: USER_ENV_COOKIES81
+        - cookie_index: 82
+          secret_name: USER_ENV_COOKIES82
+        - cookie_index: 83
+          secret_name: USER_ENV_COOKIES83
+        - cookie_index: 84
+          secret_name: USER_ENV_COOKIES84
+        - cookie_index: 85
+          secret_name: USER_ENV_COOKIES85
+        - cookie_index: 86
+          secret_name: USER_ENV_COOKIES86
+        - cookie_index: 87
+          secret_name: USER_ENV_COOKIES87
+        - cookie_index: 88
+          secret_name: USER_ENV_COOKIES88
+        - cookie_index: 89
+          secret_name: USER_ENV_COOKIES89
+        - cookie_index: 90
+          secret_name: USER_ENV_COOKIES90
+        - cookie_index: 91
+          secret_name: USER_ENV_COOKIES91
+        - cookie_index: 92
+          secret_name: USER_ENV_COOKIES92
+        - cookie_index: 93
+          secret_name: USER_ENV_COOKIES93
+        - cookie_index: 94
+          secret_name: USER_ENV_COOKIES94
+        - cookie_index: 95
+          secret_name: USER_ENV_COOKIES95
+        - cookie_index: 96
+          secret_name: USER_ENV_COOKIES96
+        - cookie_index: 97
+          secret_name: USER_ENV_COOKIES97
+        - cookie_index: 98
+          secret_name: USER_ENV_COOKIES98
+        - cookie_index: 99
+          secret_name: USER_ENV_COOKIES99
+        - cookie_index: 100
+          secret_name: USER_ENV_COOKIES100
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Bot with Specified Cookie
+        env:
+          USER_COOKIES_BASE64: ${{ secrets[matrix.secret_name] }}  # Use the mapped secret name
+        run: |
+          if [ -n "$USER_COOKIES_BASE64" ]; then
+            echo "Running bot with cookie index ${{ matrix.cookie_index }}."
+            USER_COOKIES_BASE64=$USER_COOKIES_BASE64 node multiply_btc.js
+          else
+            echo "No cookie found for index ${{ matrix.cookie_index }}. Skipping."
+          fi
+        continue-on-error: true
+

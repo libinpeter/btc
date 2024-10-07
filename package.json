@@ -1,0 +1,24 @@
+{
+  "name": "btc",
+  "version": "1.0.0",
+  "description": "Automating rolls.",
+  "main": "freebitco.js",
+  "scripts": {
+    "start": "node freebitco.js"
+  },
+  "dependencies": {
+    "chrome-remote-interface": "^0.33.2",
+    "esm": "^3.2.25",
+    "minimist": "^1.2.8",
+    "moment": "^2.30.1",
+    "puppeteer": "^23.5.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "winston": "^3.15.0"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "author": "Libin Peter",
+  "license": "MIT"
+}

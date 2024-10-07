@@ -1,0 +1,112 @@
+name: FreeBitcoin - 3
+
+on:
+  workflow_dispatch:  # Allows manual triggering
+
+
+jobs:
+  roll_1:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        include:
+          - cookie_index: 40
+            secret_name: USER_COOKIES40
+          - cookie_index: 41
+            secret_name: USER_COOKIES41
+          - cookie_index: 42
+            secret_name: USER_COOKIES42
+          - cookie_index: 43
+            secret_name: USER_COOKIES43
+          - cookie_index: 44
+            secret_name: USER_COOKIES44
+          - cookie_index: 45
+            secret_name: USER_COOKIES45
+          - cookie_index: 46
+            secret_name: USER_COOKIES46
+          - cookie_index: 47
+            secret_name: USER_COOKIES47
+          - cookie_index: 48
+            secret_name: USER_COOKIES48
+          - cookie_index: 49
+            secret_name: USER_COOKIES49
+          - cookie_index: 50
+            secret_name: USER_COOKIES50
+          - cookie_index: 51
+            secret_name: USER_COOKIES51
+          - cookie_index: 52
+            secret_name: USER_COOKIES52
+          - cookie_index: 53
+            secret_name: USER_COOKIES53
+          - cookie_index: 54
+            secret_name: USER_COOKIES54
+          - cookie_index: 55
+            secret_name: USER_COOKIES55
+          - cookie_index: 56
+            secret_name: USER_COOKIES56
+          - cookie_index: 57
+            secret_name: USER_COOKIES57
+          - cookie_index: 58
+            secret_name: USER_COOKIES58
+          - cookie_index: 59
+            secret_name: USER_COOKIES59
+          - cookie_index: 60
+            secret_name: USER_COOKIES60
+      fail-fast: false  # Continue even if a job fails
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Install Google Chrome
+        run: |
+          if (!(Get-Command "chrome.exe" -ErrorAction SilentlyContinue)) {
+            Write-Host "Google Chrome is not installed. Installing..."
+            choco install googlechrome --ignore-checksums --no-progress -y  # Install Chrome silently, ignoring checksum
+          } else {
+            Write-Host "Google Chrome is already installed. Skipping installation."
+          }
+        shell: pwsh
+
+      - name: Download and Extract CloudFreed Repository
+        run: |
+          curl -LO https://github.com/Akmal-CloudFreed/CloudFreed-CloudFlare-solver-bypass/archive/refs/heads/main.zip
+          Expand-Archive -Path main.zip -DestinationPath ./  # Extract into the current directory
+
+          # Check if destination exists and remove if necessary
+          if (Test-Path -Path ../CloudFreed-CloudFlare-solver-bypass) {
+            Remove-Item -Recurse -Force ../CloudFreed-CloudFlare-solver-bypass
+          }
+
+          # Move the entire folder instead of just its contents
+          Move-Item -Path ./CloudFreed-CloudFlare-solver-bypass-main -Destination ../CloudFreed-CloudFlare-solver-bypass
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Install CloudFreed Dependencies
+        run: npm install --prefix ../CloudFreed-CloudFlare-solver-bypass  # Install dependencies in the correct CloudFreed directory
+
+      - name: Run Bot with Specified Cookie
+        env:
+          USER_COOKIES_BASE64: ${{ secrets[matrix.secret_name] }}  # Use the mapped secret name
+        run: |
+          if ($Env:USER_COOKIES_BASE64) {
+            Write-Host "Running bot with cookie index ${{ matrix.cookie_index }}."
+            node freebitco-captcha-bot.js
+          } else {
+            Write-Host "No cookie found for index ${{ matrix.cookie_index }}. Skipping."
+          }
+        shell: pwsh
+        continue-on-error: true
+
+      - name: Upload Screenshots
+        uses: actions/upload-artifact@v3
+        with:
+          name: screenshots-${{ matrix.cookie_index }}
+          path: '*.png'

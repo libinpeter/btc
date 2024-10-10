@@ -26,9 +26,9 @@ const proxyHost = 'proxy-server.scraperapi.com';
 const proxyPort = 8001;
 
 // Define authentication credentials
-//const emails = JSON.parse(fs.readFileSync('./emails.json', 'utf8'));
+const emails = JSON.parse(fs.readFileSync('./emails.json', 'utf8'));
 const auth = {
-    username: "visualgraces@gmail.com",
+    username: emails[process.env.FREEBITCO_USER_NO],
     password: process.env.FREEBITCO_PASSWORD,
 };
 
@@ -164,14 +164,14 @@ async function performLogin(page) {
 
         // Define an array of connection methods to try in order
         const connectionMethods = [
-            {
-                name: 'Tor',
-                args: [
-                    '--no-sandbox',
-                    '--disable-setuid-sandbox',
-                    '--proxy-server=socks5://127.0.0.1:9050'
-                ],
-            },
+            // {
+            //     name: 'Tor',
+            //     args: [
+            //         '--no-sandbox',
+            //         '--disable-setuid-sandbox',
+            //         '--proxy-server=socks5://127.0.0.1:9050'
+            //     ],
+            // },
             // {
             //     name: 'Proxy',
             //     args: [
